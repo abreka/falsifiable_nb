@@ -13,8 +13,11 @@ def serve_dir(
         def __init__(self, *args, **kwargs):
             super().__init__(*args, directory=str(dir_path), **kwargs)
 
-    port = initial_port
-    for i in range(100):
+    # Calling each port twice can help for recently released ports
+    port_range = [
+        port for port in range(initial_port, initial_port + 10) for _ in range(2)
+    ]
+    for port in port_range:
         try:
             httpd = socketserver.TCPServer(("", port), Handler)
             click.echo(f"Serving at http://localhost:{port}")

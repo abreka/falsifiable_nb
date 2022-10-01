@@ -22,4 +22,4 @@ class FalsifiableNB(HTMLExporter):
         ]
 
     def _template_file_default(self):
-        return "falsifiable.tpl"
+        return "falsifiable.html.j2"

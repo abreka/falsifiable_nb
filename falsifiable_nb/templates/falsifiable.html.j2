@@ -1,1 +1,26 @@
 {%- extends 'index.html.j2' -%}
+
+{% block notebook_css %}
+{{ resources.include_css("static/base.css") }}
+{% endblock %}
+
+{%- block body_header -%}
+<body>
+<article>
+<section>
+{%- endblock body_header -%}
+
+{% block body_footer %}
+</section>
+</article>
+</body>
+{% endblock body_footer %}
+
+{% block markdowncell scoped %}
+{%- if resources.should_sanitize_html %}
+{%- set html_value=cell.source  | markdown2html | strip_files_prefix | clean_html -%}
+{%- else %}
+{%- set html_value=cell.source  | markdown2html | strip_files_prefix -%}
+{%- endif %}
+{{ html_value }}
+{%- endblock markdowncell %}

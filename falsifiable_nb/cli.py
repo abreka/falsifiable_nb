@@ -8,8 +8,8 @@ from falsifiable_nb import (
     open_file_in_browser,
     SingleNotebookChangedHandler,
     echo_generated,
-    serve_dir,
 )
+from falsifiable_nb.http_server import serve_dir
 from watchdog.observers import Observer
 from watchdog.events import LoggingEventHandler
 

@@ -1,8 +1,6 @@
 import time
 from pathlib import Path
 
-import http.server
-import socketserver
 import click
 
 from falsifiable_nb.html_exporter import FalsifiableNB
@@ -64,30 +62,3 @@ class SingleNotebookChangedHandler(FileSystemEventHandler):
             time.sleep(0.1)
             output_path = generate_html(self._notebook_path, self._output_dir)
             self._done_fn(self._notebook_path, output_path)
-
-
-def serve_dir(
-    dir_path: Path, initial_port: int = 8000, fail_on_first_bad_port: bool = False
-):
-    # Create a simple http request handler with the given directory as the root
-    class Handler(http.server.SimpleHTTPRequestHandler):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, directory=str(dir_path), **kwargs)
-
-    port = initial_port
-    for i in range(100):
-        try:
-            httpd = socketserver.TCPServer(("", port), Handler)
-            click.echo(f"Serving at http://localhost:{port}")
-
-            # Serve forever in a new thread
-            import threading
-
-            t = threading.Thread(target=httpd.serve_forever, daemon=True).start()
-            return t
-        except OSError as e:
-            # TODO: verify this works on Windows and MacOS
-            if fail_on_first_bad_port or "in use" not in str(e):
-                raise
-            else:
-                port += 1

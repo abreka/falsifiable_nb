@@ -1,6 +1,7 @@
 import os
 import os.path
 
+import mistune
 from nbconvert import preprocessors
 from nbconvert.exporters.html import HTMLExporter
 from nbformat import NotebookNode

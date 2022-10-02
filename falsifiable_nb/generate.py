@@ -28,9 +28,22 @@ def generate_html(notebook_path: Path, output_dir: Path) -> Path:
     c.FalsifiableNB.exclude_input_prompt = True
     c.FalsifiableNB.exclude_output_prompt = True
     preprocess_cell_removal(c)
+
+    c.TemplateExporter.filters = {
+        "markdown2html": "falsifiable_nb.mistune_rendering.render"
+    }
+
     #
     # Create the exporter
     exporter = FalsifiableNB(config=c)
+
+    # Use markdown2html_pandoc to convert markdown to html
+    # See:
+    # https://github.com/jupyter/nbconvert/issues/248
+
+    print(c.FalsifiableNB.filters)
+    print(c.TemplateExporter.filters)
+
     # exporter.register_preprocessor(TagRemovePreprocessor(config=c), True)
     body, resources = exporter.from_notebook_node(nb)
 

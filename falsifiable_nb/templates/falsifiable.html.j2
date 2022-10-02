@@ -16,6 +16,7 @@
 </body>
 {% endblock body_footer %}
 
+
 {% block markdowncell scoped %}
 {%- if resources.should_sanitize_html %}
 {%- set html_value=cell.source  | markdown2html | strip_files_prefix | clean_html -%}

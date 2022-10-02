@@ -4,10 +4,12 @@ from pathlib import Path
 import click
 
 from falsifiable_nb import (
-    generate_html,
     open_file_in_browser,
-    SingleNotebookChangedHandler,
+)
+from falsifiable_nb.generate import (
+    generate_html,
     echo_generated,
+    SingleNotebookChangedHandler,
 )
 from falsifiable_nb.http_server import serve_dir
 from watchdog.observers import Observer

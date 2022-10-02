@@ -74,12 +74,10 @@ class SingleNotebookChangedHandler(FileSystemEventHandler):
         self._output_dir = output_dir
         self._done_fn = done_fn
 
-    def on_modified(self, event):
-
+    def on_closed(self, event):
+        # Used closed rather than modified because modified is called multiple times.
+        # I think the jupyter behavior is consistent in that it will open, write, close
+        # for every save.
         if event.src_path == str(self._notebook_path):
-            # TODO: this is a horrible kludge. The modified event is triggered
-            # on start to write. It is often the case that this modification event
-            # fires and calls generate_html before the file is fully written!
-            time.sleep(0.1)
             output_path = generate_html(self._notebook_path, self._output_dir)
             self._done_fn(self._notebook_path, output_path)

@@ -13,12 +13,11 @@ from falsifiable_nb.generate import (
 )
 from falsifiable_nb.http_server import serve_dir
 from watchdog.observers import Observer
-from watchdog.events import LoggingEventHandler
 
 
 @click.group()
 def cli():
-    print("Hello, CLI")
+    pass
 
 
 @cli.command()

@@ -7,7 +7,7 @@ from nbconvert.preprocessors import TagRemovePreprocessor
 from traitlets.config import Config
 from watchdog.events import FileSystemEventHandler
 
-from falsifiable_nb import FalsifiableNB, preprocess_cell_removal
+from falsifiable_nb import FalsifiableNB
 
 
 def generate_html(notebook_path: Path, output_dir: Path) -> Path:
@@ -20,14 +20,25 @@ def generate_html(notebook_path: Path, output_dir: Path) -> Path:
     # Set log level to info
 
     c.FalsifiableNB.preprocessors = [
-        "falsifiable_nb.html_exporter.StripHiddenSource",
-        "falsifiable_nb.html_exporter.StripEmptyCells",
+        "falsifiable_nb.plugins.preprocessing.StripHiddenSource",
+        "falsifiable_nb.plugins.preprocessing.StripEmptyCells",
         "nbconvert.preprocessors.TagRemovePreprocessor",
-        "falsifiable_nb.html_exporter.ElideRemovedSource",
+        "falsifiable_nb.plugins.preprocessing.ElideRemovedSource",
     ]
     c.FalsifiableNB.exclude_input_prompt = True
     c.FalsifiableNB.exclude_output_prompt = True
-    preprocess_cell_removal(c)
+
+    c.TagRemovePreprocessor.remove_cell_tags = [
+        "remove_cell",
+        "private",
+        "setup",
+        "notes",
+        "hidden",
+        "install",
+    ]
+    c.TagRemovePreprocessor.remove_all_outputs_tags = ("remove_output", "assertion")
+    c.TagRemovePreprocessor.remove_input_tags = ("remove_input", "output-generator")
+    c.TagRemovePreprocessor.enabled = True
 
     c.TemplateExporter.filters = {
         "markdown2html": "falsifiable_nb.mistune_rendering.render"
@@ -40,9 +51,6 @@ def generate_html(notebook_path: Path, output_dir: Path) -> Path:
     # Use markdown2html_pandoc to convert markdown to html
     # See:
     # https://github.com/jupyter/nbconvert/issues/248
-
-    print(c.FalsifiableNB.filters)
-    print(c.TemplateExporter.filters)
 
     # exporter.register_preprocessor(TagRemovePreprocessor(config=c), True)
     body, resources = exporter.from_notebook_node(nb)

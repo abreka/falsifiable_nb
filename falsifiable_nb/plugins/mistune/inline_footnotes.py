@@ -27,7 +27,6 @@ def md_footnotes_hook(md, result, state):
     index += 1
 
     for footnote in INLINE_FOOTNOTE_PATTERN.finditer(result):
-        print("footnote", footnote)
         inner = footnote.group(1)
         replacements.append(
             (

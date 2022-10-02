@@ -3,8 +3,6 @@ from pathlib import Path
 from falsifiable_nb.html_exporter import FalsifiableNB
 import webbrowser
 
-from falsifiable_nb.remove_cells import preprocess_cell_removal
-
 
 def open_file_in_browser(file_path: Path):
     # Get the default web browser

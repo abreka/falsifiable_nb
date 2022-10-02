@@ -5,7 +5,7 @@ from nbconvert.filters.markdown_mistune import (
 )
 from mistune import PLUGINS
 
-from falsifiable_nb.mistune_plugins.inline_pandoc_footnotes import (
+from falsifiable_nb.plugins.mistune.inline_footnotes import (
     plugin_inline_footnotes,
 )
 
@@ -29,22 +29,3 @@ def render(source):
         renderer=IPythonRenderer(escape=False),
         plugins=plugins,
     ).render(source)
-
-
-class FootnotesAsSidenotes(mistune.HTMLRenderer):
-    """
-    Renders pandoc-style footnotes as sidenotes.
-    """
-
-    # https://mistune.lepture.com/en/latest/advanced.html
-    def footnote_ref(self, key, index):
-        print("footnote_ref", key, index)
-        return f'<sup class="footnote-ref"><a href="#fn-{key}">{index}</a></sup>'
-
-    def footnote_item(self, key, text):
-        print("footnote_item", key, text)
-        return f'<li id="fn-{key}">{text}</li>'
-
-    def footnotes(self, text):
-        print("footnotes", text)
-        return f'<div class="footnotes"><ol>{text}</ol></div>'

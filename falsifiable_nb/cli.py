@@ -11,7 +11,7 @@ from falsifiable_nb.generate import (
     echo_generated,
     SingleNotebookChangedHandler,
 )
-from falsifiable_nb.http_server import serve_dir
+from falsifiable_nb.http_server import serve_dir, port_range
 from watchdog.observers import Observer
 
 
@@ -46,7 +46,7 @@ def generate(
 
     httpd = None
     if serve:
-        httpd = serve_dir(output_dir)
+        httpd = serve_dir(output_dir, port_sampler=port_range(8000, 8010))
 
     if watch:
         click.echo("Watching for changes...")

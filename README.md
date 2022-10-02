@@ -1,9 +1,9 @@
-# Run a test
+# Run
 
 ```bash
-jupyter nbconvert --to falsifiable_nb.FalsifiableNB ./tests/fixtures/Untitled.ipynb
-python3 -m http.server
-
-poetry run falsifiable
+poetry run falsifiable generate \ # generate the html file
+  --serve \                       # Serve the test on localhost:80XX
+  --watch \                       # Watch for changes in the given notebook
+  ./path/to/your_notebook.ipynb
 ```
 

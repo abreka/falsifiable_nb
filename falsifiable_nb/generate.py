@@ -1,3 +1,4 @@
+import sys
 import time
 from pathlib import Path
 
@@ -74,7 +75,34 @@ class SingleNotebookChangedHandler(FileSystemEventHandler):
         self._output_dir = output_dir
         self._done_fn = done_fn
 
-    def on_closed(self, event):
+    if sys.platform == "darwin":
+
+        def on_modified(self, event):
+            # TODO: doesn't fix multiple hit problem.
+            if event.src_path == str(self._notebook_path):
+                self._handle_event(event)
+
+    else:
+
+        def on_closed(self, event):
+            # Used closed rather than modified because modified is called multiple times.
+            # I think the jupyter behavior is consistent in that it will open, write, close
+            # for every save.
+            if event.src_path == str(self._notebook_path):
+                self._handle_event(event)
+
+    def _handle_event(self, event):
+        output_path = generate_html(self._notebook_path, self._output_dir)
+        self._done_fn(self._notebook_path, output_path)
+
+
+class MacOSChangeHandler(FileSystemEventHandler):
+    def __init__(self, notebook_path: Path, output_dir: Path, done_fn: echo_generated):
+        self._notebook_path = notebook_path
+        self._output_dir = output_dir
+        self._done_fn = done_fn
+
+    def on_modified(self, event):
         # Used closed rather than modified because modified is called multiple times.
         # I think the jupyter behavior is consistent in that it will open, write, close
         # for every save.

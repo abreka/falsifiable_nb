@@ -2,7 +2,7 @@ import shutil
 import time
 from pathlib import Path
 
-from falsifiable_nb.generate import SingleNotebookChangedHandler, MacOSChangeHandler
+from falsifiable_nb.generate import SingleNotebookChangedHandler
 from watchdog.observers import Observer
 
 
@@ -17,16 +17,14 @@ def test_jupyter_style_open_write_close_events(tmp_path):
     notebook_path = tmp_path / "001_basic.ipynb"
     copy_jupyter_style(basic_fixture, notebook_path)
 
-    time.sleep(0.1)
-
     observer = Observer()
 
     hits = []
     observer.schedule(
+        # TODO: does observer call stop() on this handler?
         SingleNotebookChangedHandler(
             notebook_path,
             tmp_path,  # as output dir
-            # printit
             lambda nb_path, output_path: hits.append((nb_path, output_path)),
         ),
         str(tmp_path),
@@ -34,13 +32,34 @@ def test_jupyter_style_open_write_close_events(tmp_path):
     )
     observer.start()
 
-    # This is ugly, but I don't know how to do it better.
-    time.sleep(0.1)
-    for _ in range(3):
-        copy_jupyter_style(basic_fixture, notebook_path)
-        time.sleep(0.1)
-    assert len(hits) == 3
+    # Hope initial write event propagated.
+    time.sleep(0.2)
+    hit_count = len(hits)
 
+    # ========================================================================
+    # This is ugly, but I don't know how to do it better.
+    # ========================================================================
+
+    # One write, one event.
+    copy_jupyter_style(basic_fixture, notebook_path)
+    for _ in range(10):
+        n = len(hits)
+        if n > hit_count:
+            assert n == hit_count + 1
+            hit_count = n
+            break
+        time.sleep(0.1)
+
+    # Two quick writes, one event.
+    copy_jupyter_style(basic_fixture, notebook_path)
+    copy_jupyter_style(basic_fixture, notebook_path)
+    for _ in range(10):
+        n = len(hits)
+        if n > hit_count:
+            assert n == hit_count + 1
+            hit_count = n
+            break
+        time.sleep(0.1)
     observer.stop()
     observer.join()
 
